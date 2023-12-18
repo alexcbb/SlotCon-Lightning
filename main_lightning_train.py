@@ -53,6 +53,7 @@ def get_parser():
     parser.add_argument('--gpus', type=int, default=8, help='num of GPUs to use')
     parser.add_argument('--nodes', type=int, default=1, help='num of nodes to use')
     parser.add_argument('--strategy', type=str, default="ddp", help='training strategy to use [ddp, fsdp, ...]')
+    parser.add_argument('--checkpoint_path', type=str, default="last_checkpoint.pth", help='model checkpoint path')
 
     args = parser.parse_args()
     return args 
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     
     # TODO : prepare trainer args
     trainer_args = {
-        "max_steps": args.epochs,
+        "max_epochs": args.epochs,
         "callbacks": [lr_monitor, checkpoint_callback],
         "logger": wandb_logger,
         "precision": 16 if args.fp16 else 32,

@@ -4,9 +4,9 @@
 #SBATCH --error=logs/slotcon/slotcon.%j.err
 
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:a100:2
 #SBATCH --mem=180G
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=8
 #SBATCH -t 72:00:00
 #SBATCH --mail-user=alexandre.chapin@ec-lyon.fr
@@ -14,20 +14,17 @@
 
 echo ${SLURM_NODELIST}
 
+set -e
+set -x
 
-module purge
+data_dir="./datasets/coco/"
+output_dir="./output/slotcon_coco_r50_800ep"
 
-source ~/.bashrc
-
-conda activate mttoc
-
-export HYDRA_FULL_ERROR=1
-
-data_dir="./data/COCO/"
-
-srun python main_lightning_train.py \
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --master_port 12348 --nproc_per_node=8 \
+    main_pretrain.py \
     --dataset COCO \
     --data-dir ${data_dir} \
+    --output-dir ${output_dir} \
     \
     --arch resnet50 \
     --dim-hidden 4096 \
@@ -45,5 +42,7 @@ srun python main_lightning_train.py \
     --epochs 800 \
     --fp16 \
     \
-    --num-workers 8 \
-    --gpus 1
+    --print-freq 10 \
+    --save-freq 50 \
+    --auto-resume \
+    --num-workers 8
