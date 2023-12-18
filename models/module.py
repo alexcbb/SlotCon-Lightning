@@ -45,10 +45,9 @@ class TrainingModule(L.LightningModule):
                 lr=self.hparams.args.batch_size * self.hparams.args.world_size / 256 * self.hparams.args.base_lr,
                 weight_decay=self.hparams.args.weight_decay)
         
-        # TODO : check the scheduler
         self.scheduler = get_scheduler(
             optimizer, 
-            self.hparams.args.num_instances// self.hparams.args.batch_size, 
+            self.hparams.args.num_instances // (self.hparams.args.batch_size * self.hparams.args.world_size), 
             self.hparams.args
         )    
         return optimizer
@@ -71,14 +70,13 @@ class TrainingModule(L.LightningModule):
         self.manual_backward(loss)
         opt.step()
         self.scheduler.step()
-
         # avg loss from batch size
         self.loss_meter.update(loss.item(), crops[0].size(0))
 
         # TODO : add logging
-        self.log('train_loss', self.loss_meter.val, on_step=True)
-        self.log('train_loss_avg', self.loss_meter.avg, on_step=True)
-        self.log('lr', self.scheduler.get_lr()[0], on_step=True)
+        self.log('train_loss', self.loss_meter.val, on_step=True, sync_dist=True)
+        self.log('train_loss_avg', self.loss_meter.avg, on_step=True, sync_dist=True)
+        self.log('lr', self.scheduler.get_lr()[0], on_step=True, sync_dist=True)
         # TODO : check if necessary (maybe for ViT) ?
         # self.log('momentum', self.scheduler.get_momentum(), on_step=True)
         # self.log('weight_decay', self.scheduler.get_weight_decay(), on_step=True)

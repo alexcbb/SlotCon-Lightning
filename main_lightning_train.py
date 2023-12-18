@@ -62,18 +62,14 @@ if __name__ == '__main__':
 
     # TODO : Check args related to distributed training
     args.world_size = args.gpus * args.nodes
-    args.batch_size = int(args.batch_size / (args.gpus*args.nodes))
-
-    if args.seed is not None:
-        random.seed(args.seed)
-        np.random.seed(args.seed)
-        torch.manual_seed(args.seed)
-        torch.cuda.manual_seed_all(args.seed)
+    args.batch_size = int(args.batch_size / args.world_size)
 
     ### Create dataset
     data_module = COCOModule(args)
     data_module.setup("fit")
     args.num_instances = len(data_module.train_dataset)
+
+    print(f"The dataset contains {args.num_instances} instances")
 
     ### Create module
     module = TrainingModule(args)
@@ -106,7 +102,7 @@ if __name__ == '__main__':
     
     # TODO : prepare trainer args
     trainer_args = {
-        "max_epochs": args.epochs,
+        "max_steps": args.epochs,
         "callbacks": [lr_monitor, checkpoint_callback],
         "logger": wandb_logger,
         "precision": 16 if args.fp16 else 32,
