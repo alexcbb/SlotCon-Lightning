@@ -6,9 +6,12 @@ from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
 from lightning.pytorch.loggers import WandbLogger
 import lightning.pytorch as L 
 import torch
+from torch.utils.data import DataLoader
+
 import time
 
 from models.module import TrainingModule
+from data.datasets import COCOModule
 
 def get_parser():
     parser = argparse.ArgumentParser('SlotCon')
@@ -58,6 +61,7 @@ if __name__ == '__main__':
     args = get_parser()
 
     # TODO : Check args related to distributed training
+    args.world_size = args.gpus * args.nodes
     args.batch_size = int(args.batch_size / (args.gpus*args.nodes))
 
     if args.seed is not None:
@@ -65,6 +69,10 @@ if __name__ == '__main__':
         np.random.seed(args.seed)
         torch.manual_seed(args.seed)
         torch.cuda.manual_seed_all(args.seed)
+
+    ### Create dataset
+    data_module = COCOModule(args)
+    args.num_instances = len(data_module.train_dataset)
 
     ### Create module
     module = TrainingModule(args)
@@ -109,7 +117,7 @@ if __name__ == '__main__':
         "check_val_every_n_epoch": 10
     }
     trainer = L.Trainer(**trainer_args)
-    trainer.fit(module)
+    trainer.fit(module, data_module)
 
     # Save trained model
     save_path = args.checkpoint_path if args.checkpoint_path is not None else "last_model.pth"

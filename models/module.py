@@ -3,13 +3,10 @@ import lightning.pytorch as L
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS
 
 import torch    
-from torch.utils.data import DataLoader
 
 from models import resnet
 from models.slotcon import SlotCon
 from utils.lars import LARS
-from data.datasets import ImageFolder
-from data.transforms import CustomDataAugmentation
 from utils.lr_scheduler import get_scheduler
 from utils.util import AverageMeter 
 
@@ -47,48 +44,16 @@ class TrainingModule(L.LightningModule):
                 self.model.parameters(),
                 lr=self.hparams.batch_size * self.hparams.world_size / 256 * self.hparams.base_lr,
                 weight_decay=self.hparams.weight_decay)
-        return optimizer
-    
-    def setup(
-            self, 
-            stage: str
-        ):
-        self.transform = CustomDataAugmentation(
-            self.hparams.args.image_size, 
-            self.hparams.args.min_scale
-        )
-        self.train_dataset = ImageFolder(
-            self.hparams.args.dataset, 
-            self.hparams.args.data_dir, 
-            self.transform
-        )
         
-    def train_dataloader(self): 
-        self.train_loader = DataLoader(
-            self.train_dataset, 
-            batch_size=self.hparams.args.batch_size, 
-            shuffle=True, 
-            num_workers=self.hparams.args.num_workers, 
-            pin_memory=True, 
-            drop_last=True
-        )     
         # TODO : check the scheduler
         self.scheduler = get_scheduler(
             self.optimizer, 
-            len(self.train_dataset) // self.hparams.args.batch_size, 
+            self.hparams.args.num_instances// self.hparams.args.batch_size, 
             self.hparams.args
         )    
-        return self.train_loader
-    
-    def val_dataloader(self):
-        return DataLoader(
-            self.train_dataset, 
-            batch_size=1, 
-            shuffle=True, 
-            num_workers=self.hparams.args.num_workers, 
-            pin_memory=True, 
-        )  
+        return optimizer
 
+    
     def forward(self, x):
         return self.model(x)
 
