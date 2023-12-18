@@ -41,19 +41,19 @@ class ImageFolder(Dataset):
 
 # Implementation following : https://github.com/Wuziyi616/SlotDiffusion
 class COCOModule(L.LightningDataModule):
-    def __init__(self, args):
+    def __init__(self, data_args):
         super().__init__()
         """Build COCO2017 dataset that load images."""
         self.save_hyperparameters()
         self.transform = CustomDataAugmentation(
-            args.image_size, 
-            args.min_scale
+            data_args.image_size, 
+            data_args.min_scale
         )
     
     def setup(self, stage="fit"):
         self.train_dataset = ImageFolder(
-            self.hparams.args.dataset, 
-            self.hparams.args.data_dir, 
+            self.hparams.data_args.dataset, 
+            self.hparams.data_args.data_dir, 
             self.transform
         )
         self.val_dataset = copy.deepcopy(self.train_dataset)
@@ -61,9 +61,9 @@ class COCOModule(L.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,
-            batch_size=self.hparams.batch_size,
+            batch_size=self.hparams.data_args.batch_size,
             shuffle=True,
-            num_workers=self.hparams.num_workers,
+            num_workers=self.hparams.data_args.num_workers,
             pin_memory=True,
             drop_last=True
         )
@@ -71,9 +71,9 @@ class COCOModule(L.LightningDataModule):
     def val_dataloader(self):
         return DataLoader(
             self.val_dataset,
-            batch_size=max(1, self.hparams.batch_size),
+            batch_size=max(1, self.hparams.data_args.batch_size),
             shuffle=False,  # originally True
-            num_workers=self.hparams.num_workers,
+            num_workers=self.hparams.data_args.num_workers,
             pin_memory=False,
             drop_last=False
         )
