@@ -78,7 +78,7 @@ class TrainingModule(L.LightningModule):
         # TODO : add logging
         self.log('train_loss', self.loss_meter.val, on_step=True)
         self.log('train_loss_avg', self.loss_meter.avg, on_step=True)
-        self.log('lr', self.scheduler.get_lr(), on_step=True)
+        self.log('lr', self.scheduler.get_lr()[0], on_step=True)
         # TODO : check if necessary (maybe for ViT) ?
         # self.log('momentum', self.scheduler.get_momentum(), on_step=True)
         # self.log('weight_decay', self.scheduler.get_weight_decay(), on_step=True)
