@@ -25,26 +25,6 @@ module load pytorch-gpu/py3/2.0.0
 
 export HYDRA_FULL_ERROR=1
 
-srun python main_lightning_train.py \
-    --dataset COCO \
-    --data-dir ${data_dir} \
-    \
-    --arch resnet50 \
-    --dim-hidden 4096 \
-    --dim-out 256 \
-    --num-prototypes 256 \
-    --teacher-momentum 0.99 \
-    --teacher-temp 0.07 \
-    --group-loss-weight 0.5 \
-    \
-    --batch-size 768 \
-    --optimizer lars \
-    --base-lr 1.0 \
-    --weight-decay 1e-5 \
-    --warmup-epoch 5 \
-    --epochs 800 \
-    --fp16 \
-    \
-    --num-workers 8
+srun main_lightning_train.py --dataset COCO --data-dir ${data_dir} --arch resnet50 --epochs 800 --fp16 --num-workers 8
 
 
