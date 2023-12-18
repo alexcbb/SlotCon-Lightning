@@ -1,3 +1,4 @@
+
 import argparse
 import random
 import numpy as np
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     args = get_parser()
 
     # TODO : Check args related to distributed training
-    args.batch_size = int(args.batch_size / args.world_size)
+    args.batch_size = int(args.batch_size / (args.gpus*args.nodes))
 
     if args.seed is not None:
         random.seed(args.seed)
