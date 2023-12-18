@@ -7,6 +7,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
 from PIL import ImageFilter, ImageOps
+from typing import List
 
 def _get_image_size(img):
     if TF._is_pil_image(img):
@@ -66,8 +67,14 @@ class Solarize(nn.Module):
 
 
 class CustomTwoCrop(object):
-    def __init__(self, size=224, scale=(0.2, 1.0), ratio=(3. / 4., 4. / 3.), interpolation=TF.InterpolationMode.BILINEAR,
-                condition_overlap=True):
+    def __init__(
+            self, 
+            size: int = 224, 
+            scale: List[float] = (0.2, 1.0), 
+            ratio: List[float] = (3. / 4., 4. / 3.), 
+            interpolation = TF.InterpolationMode.BILINEAR,
+            condition_overlap: bool = True
+        ):
         if isinstance(size, (tuple, list)):
             self.size = size
         else:
@@ -202,6 +209,9 @@ class CustomRandomHorizontalFlip(nn.Module):
 
 
 class CustomDataAugmentation(object):
+    """
+    Custom data augmentation using multi-crop augmentation 
+    """
     def __init__(self, size=224, min_scale=0.08):
         color_jitter = transforms.Compose([
             transforms.RandomApply(
