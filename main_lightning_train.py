@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
     ### Create dataset
     data_module = COCOModule(args)
+    data_module.setup("fit")
     args.num_instances = len(data_module.train_dataset)
 
     ### Create module
