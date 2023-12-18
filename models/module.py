@@ -47,7 +47,7 @@ class TrainingModule(L.LightningModule):
         
         # TODO : check the scheduler
         self.scheduler = get_scheduler(
-            self.optimizer, 
+            optimizer, 
             self.hparams.args.num_instances// self.hparams.args.batch_size, 
             self.hparams.args
         )    
