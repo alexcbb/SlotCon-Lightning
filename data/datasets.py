@@ -44,13 +44,14 @@ class COCOModule(L.LightningDataModule):
     def __init__(self, args):
         super().__init__()
         """Build COCO2017 dataset that load images."""
-        self.save_hyperparameters(args)
+        self.save_hyperparameters()
         self.transform = CustomDataAugmentation(
             args.image_size, 
             args.min_scale
         )
     
-    def setup(self, stage):
+    def setup(self, stage="fit"):
+        print(f"Args from COCOModule : {self.hparams.args}")
         self.train_dataset = ImageFolder(
             self.hparams.args.dataset, 
             self.hparams.args.data_dir, 

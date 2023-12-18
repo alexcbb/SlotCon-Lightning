@@ -18,7 +18,7 @@ class TrainingModule(L.LightningModule):
             args
         ):
         super().__init__()
-        self.save_hyperparameters(args)
+        self.save_hyperparameters()
 
         self.encoder = resnet.__dict__[args.arch]
         self.model = SlotCon(self.encoder, args) # directly contains teacher and student networks
