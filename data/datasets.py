@@ -51,7 +51,6 @@ class COCOModule(L.LightningDataModule):
         )
     
     def setup(self, stage="fit"):
-        print(f"Args from COCOModule : {self.hparams.args}")
         self.train_dataset = ImageFolder(
             self.hparams.args.dataset, 
             self.hparams.args.data_dir, 

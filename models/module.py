@@ -29,21 +29,21 @@ class TrainingModule(L.LightningModule):
         if self.hparams.args.optimizer == 'sgd':
             optimizer = torch.optim.SGD(
                 self.model.parameters(),
-                lr=self.hparams.batch_size * self.hparams.world_size / 256 * self.hparams.base_lr,
-                momentum=self.hparams.momentum,
-                weight_decay=self.hparams.weight_decay)
-        elif self.hparams.optimizer == 'lars':
+                lr=self.hparams.args.batch_size * self.hparams.args.world_size / 256 * self.hparams.args.base_lr,
+                momentum=self.hparams.args.momentum,
+                weight_decay=self.hparams.args.weight_decay)
+        elif self.hparams.args.optimizer == 'lars':
             optimizer = LARS(
                 self.model.parameters(),
-                lr=self.hparams.batch_size * self.hparams.world_size / 256 * self.hparams.base_lr,
-                momentum=self.hparams.momentum,
-                weight_decay=self.hparams.weight_decay)
+                lr=self.hparams.args.batch_size * self.hparams.args.world_size / 256 * self.hparams.args.base_lr,
+                momentum=self.hparams.args.momentum,
+                weight_decay=self.hparams.args.weight_decay)
         # TODO : check with ViT
-        elif self.hparams.optimizer == 'adam':
+        elif self.hparams.args.optimizer == 'adam':
             optimizer = torch.optim.Adam(
                 self.model.parameters(),
-                lr=self.hparams.batch_size * self.hparams.world_size / 256 * self.hparams.base_lr,
-                weight_decay=self.hparams.weight_decay)
+                lr=self.hparams.args.batch_size * self.hparams.args.world_size / 256 * self.hparams.args.base_lr,
+                weight_decay=self.hparams.args.weight_decay)
         
         # TODO : check the scheduler
         self.scheduler = get_scheduler(
