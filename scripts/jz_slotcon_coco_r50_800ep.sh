@@ -18,10 +18,6 @@
 echo ${SLURM_NODELIST}
 
 module purge
-
-set -e
-set -x
-
 data_dir="./data/COCO/"
 
 #module load cpuarch/amd # To be compatible with a100 nodes
@@ -30,7 +26,7 @@ module load pytorch-gpu/py3/2.0.0
 export HYDRA_FULL_ERROR=1
 
 
-srun main_pretrain.py \
+srun main_lightning_train.py \
     --dataset COCO \
     --data-dir ${data_dir} \
     \
