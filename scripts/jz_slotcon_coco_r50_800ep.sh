@@ -10,10 +10,10 @@
 #SBATCH --ntasks-per-node=8 #number of MPI tasks per node (=number of GPUs per node)
 #SBATCH --exclusive
 #SBATCH --hint=nomultithread
-#SBATCH -t 50:00:00
+#SBATCH -t 20:00:00
 #SBATCH --mail-user=alexandre.chapin@ec-lyon.fr
 #SBATCH --mail-typ=FAIL
-#SBATCH --qos=qos_gpu-t4
+#SBATCH --qos=qos_gpu-t3
 
 echo ${SLURM_NODELIST}
 

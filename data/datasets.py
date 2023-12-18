@@ -6,7 +6,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 import lightning.pytorch as L
 from torch.utils.data import DataLoader
-from transforms import CustomDataAugmentation
+from .transforms import CustomDataAugmentation
 
 class ImageFolder(Dataset):
     def __init__(
